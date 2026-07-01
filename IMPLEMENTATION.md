@@ -22,7 +22,7 @@ hides the indicator and logs the session. Fully offline; model files live in
 | `recorder.py` | `AudioRecorder` — mic capture (sounddevice) → mono float32 numpy |
 | `transcriber.py` | `Transcriber` — faster-whisper wrapper, model under `models/` |
 | `injector.py` | `TextInjector` — type text at cursor via Win32 `SendInput` Unicode |
-| `overlay.py` | `Overlay` — borderless always-on-top status indicator (tkinter) |
+| `overlay.py` | `Overlay` — status indicator: animated mic-level waveform while recording, text while transcribing (tkinter) |
 | `tray.py` | system-tray icon with Quit (pystray) |
 | `session_log.py` | `SessionLogger` — append JSONL session records |
 | `hotkey.py` | `PushToTalk` — global press/release listener |

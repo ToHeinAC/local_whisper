@@ -34,9 +34,10 @@ def main() -> None:
     transcriber = Transcriber(settings)
     print("Model ready.")
 
-    overlay = Overlay()
+    recorder = AudioRecorder(settings.sample_rate)
+    overlay = Overlay(level_source=recorder.level)
     controller = Controller(
-        recorder=AudioRecorder(settings.sample_rate),
+        recorder=recorder,
         transcriber=transcriber,
         injector=TextInjector(settings.type_delay),
         logger=SessionLogger(settings.logs_dir),
@@ -47,7 +48,14 @@ def main() -> None:
         threading.Thread(target=controller.on_release, daemon=True).start()
 
     ptt = PushToTalk(settings.hotkey, controller.on_press, stop_in_worker)
-    ptt.start()
+    try:
+        ptt.start()
+    except ValueError as exc:
+        print(
+            f"\nInvalid HOTKEY {settings.hotkey!r} in .env: {exc.args[0]}\n"
+            "Use keyboard-library key names, e.g. 'ctrl+alt+space'."
+        )
+        raise SystemExit(1)
 
     tray = create_tray(on_quit=overlay.stop)
     tray.run_detached()

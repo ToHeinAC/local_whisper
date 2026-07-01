@@ -1,6 +1,7 @@
 """Recorder buffer logic — no real audio device required."""
 
 import numpy as np
+import pytest
 
 from src.recorder import AudioRecorder
 
@@ -24,3 +25,13 @@ def test_callback_chunks_are_concatenated_as_mono():
 
     assert out.dtype == np.float32
     np.testing.assert_allclose(out, [0.1, 0.2, 0.3])
+
+
+def test_level_tracks_peak_of_latest_chunk():
+    rec = AudioRecorder(sample_rate=16000)
+    rec._chunks = []
+    rec._callback(np.array([[0.1], [-0.4]], dtype=np.float32), 2, None, None)
+    assert rec.level() == pytest.approx(0.4)
+    # stop() resets the level for the meter
+    rec.stop()
+    assert rec.level() == 0.0

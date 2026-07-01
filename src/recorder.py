@@ -16,14 +16,23 @@ class AudioRecorder:
         self.sample_rate = sample_rate
         self._chunks: list[np.ndarray] = []
         self._stream: sd.InputStream | None = None
+        self._level = 0.0  # latest chunk peak amplitude (0..1), for the meter
 
     def _callback(self, indata, frames, time, status) -> None:  # noqa: ANN001
         # Copy: sounddevice reuses the buffer after the callback returns.
-        self._chunks.append(indata[:, 0].copy())
+        chunk = indata[:, 0].copy()
+        self._chunks.append(chunk)
+        if chunk.size:
+            self._level = float(np.max(np.abs(chunk)))
+
+    def level(self) -> float:
+        """Peak amplitude of the most recent audio chunk (0..1)."""
+        return self._level
 
     def start(self) -> None:
         """Open the microphone stream and begin accumulating audio."""
         self._chunks = []
+        self._level = 0.0
         self._stream = sd.InputStream(
             samplerate=self.sample_rate,
             channels=1,
@@ -38,6 +47,7 @@ class AudioRecorder:
             self._stream.stop()
             self._stream.close()
             self._stream = None
+        self._level = 0.0
         return self._merge()
 
     def _merge(self) -> np.ndarray:

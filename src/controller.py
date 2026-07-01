@@ -41,7 +41,7 @@ class Controller:
         self._busy = True
         self._start = datetime.now()
         log.info("hotkey down -> recording started")
-        self._overlay.show("● Recording")
+        self._overlay.show_meter()
         self._recorder.start()
 
     def on_release(self) -> None:
@@ -50,7 +50,7 @@ class Controller:
         try:
             audio = self._recorder.stop()
             log.info("hotkey up -> captured %d samples, transcribing", audio.size)
-            self._overlay.show("… Transcribing")
+            self._overlay.show_text("… Transcribing")
             text = self._transcriber.transcribe(audio)
             log.info("transcript: %r", text)
             if text:
