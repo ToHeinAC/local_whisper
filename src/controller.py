@@ -9,6 +9,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 
+from .commands import parse
 from .injector import TextInjector
 from .overlay import Overlay
 from .recorder import AudioRecorder
@@ -54,7 +55,11 @@ class Controller:
             text = self._transcriber.transcribe(audio)
             log.info("transcript: %r", text)
             if text:
-                self._injector.inject(text)
+                for kind, value in parse(text):
+                    if kind == "text":
+                        self._injector.inject(value)
+                    else:
+                        self._injector.press(value)
                 log.info("typed %d chars", len(text))
             self._logger.record(self._start, datetime.now(), len(text))
         except Exception:  # noqa: BLE001

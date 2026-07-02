@@ -16,6 +16,9 @@ INPUT_KEYBOARD = 1
 KEYEVENTF_KEYUP = 0x0002
 KEYEVENTF_UNICODE = 0x0004
 
+# Virtual-key codes for the special keys spoken commands can trigger.
+_VK = {"enter": 0x0D, "tab": 0x09}
+
 ULONG_PTR = ctypes.c_size_t  # pointer-sized, matches Win32 ULONG_PTR
 
 
@@ -62,12 +65,27 @@ def _key_event(scan: int, key_up: bool) -> _INPUT:
     return inp
 
 
+def _vk_event(vk: int, key_up: bool) -> _INPUT:
+    flags = KEYEVENTF_KEYUP if key_up else 0
+    inp = _INPUT(type=INPUT_KEYBOARD)
+    inp.ki = _KEYBDINPUT(wVk=vk, wScan=0, dwFlags=flags, time=0, dwExtraInfo=0)
+    return inp
+
+
 class TextInjector:
     def __init__(self, type_delay: float = 0.0) -> None:
         self._type_delay = type_delay
 
     def _send_char(self, ch: str) -> None:
         events = (_INPUT * 2)(_key_event(ord(ch), False), _key_event(ord(ch), True))
+        sent = _user32.SendInput(2, events, ctypes.sizeof(_INPUT))
+        if sent != 2:
+            raise ctypes.WinError(ctypes.get_last_error())
+
+    def press(self, key: str) -> None:
+        """Press and release a special key (`"enter"` or `"tab"`)."""
+        vk = _VK[key]
+        events = (_INPUT * 2)(_vk_event(vk, False), _vk_event(vk, True))
         sent = _user32.SendInput(2, events, ctypes.sizeof(_INPUT))
         if sent != 2:
             raise ctypes.WinError(ctypes.get_last_error())

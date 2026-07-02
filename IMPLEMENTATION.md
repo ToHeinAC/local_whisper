@@ -14,6 +14,11 @@ transcribe locally with faster-whisper → type the text at the cursor → relea
 hides the indicator and logs the session. Fully offline; model files live in
 `models/`.
 
+**Voice formatting commands** (recognised in the transcript by `commands.py`):
+`new line` / `next line` → Enter, `new paragraph` → Enter×2, `tab` → Tab. The
+match eats whitespace/punctuation Whisper puts around the spoken command, so a
+punctuation mark dictated right next to a command word may be swallowed.
+
 ## Components (`src/`)
 
 | Module | Responsibility |
@@ -21,7 +26,8 @@ hides the indicator and logs the session. Fully offline; model files live in
 | `config.py` | Load `.env` into a `Settings` dataclass; resolve app-relative paths |
 | `recorder.py` | `AudioRecorder` — mic capture (sounddevice) → mono float32 numpy |
 | `transcriber.py` | `Transcriber` — faster-whisper wrapper, model under `models/` |
-| `injector.py` | `TextInjector` — type text at cursor via Win32 `SendInput` Unicode |
+| `commands.py` | `parse()` — split transcript into text + special-key actions (voice formatting) |
+| `injector.py` | `TextInjector` — type text (`inject`) and press keys (`press`) at cursor via Win32 `SendInput` |
 | `overlay.py` | `Overlay` — status indicator: animated mic-level waveform while recording, text while transcribing (tkinter) |
 | `tray.py` | system-tray icon with Quit (pystray) |
 | `session_log.py` | `SessionLogger` — append JSONL session records |

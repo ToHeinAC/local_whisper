@@ -8,7 +8,8 @@ hotkey UP   ─▶ (worker thread) Controller.on_release:
                  audio = recorder.stop()
                  overlay.show("… Transcribing")
                  text  = transcriber.transcribe(audio)
-                 injector.inject(text)        # typed at cursor
+                 for kind, value in commands.parse(text):   # split text vs. keys
+                     injector.inject/press(value)            # typed at cursor
                  logger.record(start, end, len(text))
                  overlay.hide()
 ```
