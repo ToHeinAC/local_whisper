@@ -6,7 +6,12 @@ environment, the model files, and logs all live together.
 ## Prerequisites
 
 - Windows 11
-- [uv](https://docs.astral.sh/uv/) installed and on PATH
+- Network access **for the one-time install only**
+
+No admin rights and no pre-installed tooling are required. `install.bat`
+bootstraps its own portable [uv](https://docs.astral.sh/uv/) into `tools\uv.exe`
+(a single static binary, ~75 MB, no installer/registry). `uv` in turn fetches a
+managed Python if the machine has none, so the target needs no system Python.
 
 ## Install (once)
 
@@ -16,9 +21,17 @@ install.bat
 
 This will:
 1. create `.env` from `.env.example` (if missing),
-2. `uv sync` — create `.venv/` and install dependencies,
-3. download the configured whisper model into `models/`,
-4. create a **desktop shortcut** (`local_whisper.lnk`, launches minimized).
+2. **bootstrap `uv`** — `scripts\bootstrap_uv.ps1` downloads the portable
+   `uv.exe` into `tools\` (reuses a PATH `uv` if one exists; no-op if already
+   vendored),
+3. `uv sync` — create `.venv/` and install dependencies (pulling a managed
+   Python if needed),
+4. download the configured whisper model into `models/`,
+5. create a **desktop shortcut** (`local_whisper.lnk`, launches minimized).
+
+Both `install.bat` and `run.bat` resolve `uv` from `tools\uv.exe` first, falling
+back to a `uv` on PATH. `run.bat` never downloads anything; if `uv` is missing it
+tells you to run `install.bat`.
 
 ## Run
 

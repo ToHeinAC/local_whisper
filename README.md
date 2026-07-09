@@ -8,9 +8,13 @@ everything lives in the app folder.
 ## Quick start
 
 ```bat
-install.bat   :: one-time: sync deps + download model + create desktop shortcut
+install.bat   :: one-time: bootstrap uv + sync deps + download model + shortcut
 run.bat       :: launch (or double-click the desktop shortcut)
 ```
+
+No admin rights or pre-installed tools needed — `install.bat` fetches a portable
+`uv` into `tools\` (which then supplies Python too). One-time network access
+required; after that it runs fully offline.
 
 Hold **Ctrl+Alt+Space**, speak, release. Configure via `.env` (see `.env.example`).
 

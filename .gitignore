@@ -15,6 +15,7 @@ htmlcov/
 # App data (bundled per-machine, not versioned)
 models/
 logs/
+tools/
 
 # OS / IDE
 Thumbs.db

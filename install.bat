@@ -6,11 +6,17 @@ if not exist ".env" (
     copy /y ".env.example" ".env" >nul
 )
 
+echo Ensuring uv is available (portable, no admin) ...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\bootstrap_uv.ps1" || goto :error
+
+set "UV=%~dp0tools\uv.exe"
+if not exist "%UV%" set "UV=uv"
+
 echo Installing dependencies with uv ...
-uv sync || goto :error
+"%UV%" sync || goto :error
 
 echo Downloading whisper model ...
-uv run python -m src.download_model || goto :error
+"%UV%" run python -m src.download_model || goto :error
 
 echo Creating desktop shortcut ...
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\create_shortcut.ps1"
