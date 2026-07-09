@@ -54,8 +54,9 @@ All settings come from `.env` (see `.env.example`). Details in
 
 ## Run & deploy
 
-`install.bat` (sync deps + download model + desktop shortcut), then `run.bat`.
-Details in [docs/deployment.md](docs/deployment.md).
+`install.bat` (vendor uv + Python into `tools\`, sync deps, download model,
+desktop shortcut), then `run.bat`. No system Python required. Details in
+[docs/deployment.md](docs/deployment.md).
 
 ## Tests
 

@@ -1,6 +1,9 @@
 @echo off
 cd /d "%~dp0"
 
+rem Resolve the in-folder managed Python (matches install.bat).
+set "UV_PYTHON_INSTALL_DIR=%~dp0tools\python"
+
 set "UV=%~dp0tools\uv.exe"
 if exist "%UV%" goto run
 

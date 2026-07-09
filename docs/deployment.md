@@ -8,10 +8,12 @@ environment, the model files, and logs all live together.
 - Windows 11
 - Network access **for the one-time install only**
 
-No admin rights and no pre-installed tooling are required. `install.bat`
-bootstraps its own portable [uv](https://docs.astral.sh/uv/) into `tools\uv.exe`
-(a single static binary, ~75 MB, no installer/registry). `uv` in turn fetches a
-managed Python if the machine has none, so the target needs no system Python.
+No admin rights, no pre-installed tooling, and **no system Python** are required.
+`install.bat` bootstraps its own portable [uv](https://docs.astral.sh/uv/) into
+`tools\uv.exe` (a single static binary, no installer/registry), then has uv
+download a managed CPython **into the folder** at `tools\python` (via
+`UV_PYTHON_INSTALL_DIR`). Both the tool and the interpreter live under `tools\`,
+so the deployed folder is self-contained.
 
 ## Install (once)
 
@@ -24,14 +26,18 @@ This will:
 2. **bootstrap `uv`** — `scripts\bootstrap_uv.ps1` downloads the portable
    `uv.exe` into `tools\` (reuses a PATH `uv` if one exists; no-op if already
    vendored),
-3. `uv sync` — create `.venv/` and install dependencies (pulling a managed
-   Python if needed),
-4. download the configured whisper model into `models/`,
-5. create a **desktop shortcut** (`local_whisper.lnk`, launches minimized).
+3. **bootstrap Python** — `scripts\bootstrap_python.ps1` has uv install a managed
+   CPython (pinned by `.python-version`) into `tools\python` (no-op if present),
+   and removes any `.venv` copied from another machine whose interpreter path is
+   now dead, so step 4 rebuilds it cleanly,
+4. `uv sync` — create `.venv/` (against the in-folder Python) and install
+   dependencies,
+5. download the configured whisper model into `models/`,
+6. create a **desktop shortcut** (`local_whisper.lnk`, launches minimized).
 
-Both `install.bat` and `run.bat` resolve `uv` from `tools\uv.exe` first, falling
-back to a `uv` on PATH. `run.bat` never downloads anything; if `uv` is missing it
-tells you to run `install.bat`.
+Both `install.bat` and `run.bat` set `UV_PYTHON_INSTALL_DIR` to `tools\python` and
+resolve `uv` from `tools\uv.exe` first, falling back to a `uv` on PATH. `run.bat`
+never downloads anything; if `uv` is missing it tells you to run `install.bat`.
 
 ## Run
 
@@ -48,8 +54,14 @@ If global hotkeys don't fire, run `run.bat` as administrator (see
 
 ## Moving to another machine
 
-Copy the whole folder. With `models/` and `.venv/` present it runs offline; if you
-copy without `.venv/`, run `install.bat` again on the target machine.
+Copy the whole folder and run `install.bat` once on the target (needs no system
+Python — it uses the vendored `tools\uv.exe` + `tools\python`, needing network
+only to `uv sync` deps and fetch the model if they aren't already cached).
+
+A copied `.venv/` cannot just be reused as-is: `pyvenv.cfg` records the **absolute**
+path of the Python that built it, which won't match the new machine/location. The
+install step detects that stale `.venv` and rebuilds it against `tools\python`, so
+you don't hit a dead-interpreter error.
 
 ## Logs
 

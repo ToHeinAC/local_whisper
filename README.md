@@ -12,9 +12,9 @@ install.bat   :: one-time: bootstrap uv + sync deps + download model + shortcut
 run.bat       :: launch (or double-click the desktop shortcut)
 ```
 
-No admin rights or pre-installed tools needed — `install.bat` fetches a portable
-`uv` into `tools\` (which then supplies Python too). One-time network access
-required; after that it runs fully offline.
+No admin rights, pre-installed tools, or **system Python** needed — `install.bat`
+vendors a portable `uv` and a managed Python into `tools\`. One-time network
+access required; after that it runs fully offline.
 
 Hold **Ctrl+Alt+Space**, speak, release. Configure via `.env` (see `.env.example`).
 
