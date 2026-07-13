@@ -16,11 +16,10 @@ No admin rights, pre-installed tools, or **system Python** needed — `install.b
 vendors a portable `uv` and a managed Python into `tools\`. One-time network
 access required; after that it runs fully offline.
 
-Hold **Ctrl+Alt+Space**, speak, release. Configure via `.env` (see `.env.example`).
+Hold **Ctrl+Shift**, speak, release. Configure via `.env` (see `.env.example`).
 
 ## Documentation
 
-- [PRD.md](PRD.md) — product requirements
 - [IMPLEMENTATION.md](IMPLEMENTATION.md) — current implementation state
 - [docs/](docs/) — component-level detail
 
